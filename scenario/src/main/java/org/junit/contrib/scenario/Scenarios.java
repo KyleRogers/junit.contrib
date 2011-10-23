@@ -14,15 +14,19 @@
  */
 package org.junit.contrib.scenario;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * 
  *
  *
  * @author Stefan Penndorf <stefan@cyphoria.net>
  */
-public interface Scenario {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Scenarios {
 
-	public String getName();
-	
-	
 }

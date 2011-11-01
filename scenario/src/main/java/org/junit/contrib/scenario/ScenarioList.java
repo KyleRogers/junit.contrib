@@ -22,19 +22,12 @@ import java.util.List;
 /**
  * A <code>ScenarioList</code> is an order read-only list of scenarios. The
  * <code>ScenarioList</code> class provides various factory methods for
- * convenient creation from custom scenarios or object arrays.
+ * convenient creation from custom scenario collections or object arrays.
  * 
  * 
  * @author Stefan Penndorf <stefan@cyphoria.net>
  */
-public class ScenarioList implements Iterable<Scenario> {
-
-	private final List<Scenario> scenarios;
-
-	protected ScenarioList(final Collection<Scenario> scenarios) {
-		super();
-		this.scenarios = new ArrayList<Scenario>(scenarios);
-	}
+public final class ScenarioList implements Iterable<Scenario> {
 
 	/**
 	 * <p>
@@ -54,7 +47,7 @@ public class ScenarioList implements Iterable<Scenario> {
 	 * </p>
 	 * 
 	 * @param arrs
-	 *            array with scenario names and scenario paramters.
+	 *            array with scenario names and scenario parameters.
 	 * @return the <code>ScenarioList</code> created from <code>arrs</code>.
 	 */
 	public static ScenarioList fromArray(final Object[][][] arrs) {
@@ -70,16 +63,53 @@ public class ScenarioList implements Iterable<Scenario> {
 		return new ScenarioList(scenarios);
 	}
 
-	public Iterator<Scenario> iterator() {
-		return scenarios.iterator();
+	/**
+	 * <p>
+	 * Creates a new {@link ScenarioList} from the collection of scenarios
+	 * provided. The scenarios will be managed in the order they are returned by
+	 * the collection's iterator. This will be most likely the order in which
+	 * those scenarios get executed. For example:
+	 * 
+	 * <pre>
+	 * List&lt;MyScenario&gt; scenarios = new ArrayList&lt;MyScenario&gt;();
+	 * scenarios.add(...);
+	 * ...
+	 * 
+	 * ScenarioList.fromList(scenarios);
+	 * </pre>
+	 * 
+	 * </p>
+	 * 
+	 * @param scenarioCollection
+	 *            collection of scenarios used to create a new
+	 *            <code>ScenarioList</code>.
+	 * @return the <code>ScenarioList</code> created from
+	 *         <code>scenarioCollection</code>.
+	 */
+	public static ScenarioList fromList(
+			Collection<? extends Scenario> scenarioCollection) {
+		return new ScenarioList(scenarioCollection);
+	}
+
+	private final List<Scenario> scenarios;
+
+	/**
+	 * Private constructor, see static factory methods.
+	 * 
+	 * @param scenarios
+	 *            collection of scenarios.
+	 */
+	private ScenarioList(final Collection<? extends Scenario> scenarios) {
+		super();
+		this.scenarios = new ArrayList<Scenario>(scenarios);
 	}
 
 	/**
-	 * @param asList
-	 * @return
+	 * Returns an iterator over the elements of this <code>ScenarioList</code>
+	 * in proper sequence.
 	 */
-	public static ScenarioList fromList(List<Scenario> asList) {
-		return new ScenarioList(null);
+	public Iterator<Scenario> iterator() {
+		return scenarios.iterator();
 	}
 
 }

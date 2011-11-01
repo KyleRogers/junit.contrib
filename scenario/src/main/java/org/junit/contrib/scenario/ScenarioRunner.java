@@ -168,8 +168,10 @@ public class ScenarioRunner extends Suite {
 						.newInstance(((ParameterizedScenario) this.scenario)
 								.getParameters());
 			}
-
-			return null;
+			
+			throw new Exception("Expected Constructor with single Scenario "
+					+ "argument when using custom Scenario "
+					+ "implementation.");
 		}
 
 		@Override

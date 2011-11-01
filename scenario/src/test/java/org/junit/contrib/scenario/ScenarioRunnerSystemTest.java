@@ -14,6 +14,8 @@
  */
 package org.junit.contrib.scenario;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -21,6 +23,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -35,6 +39,7 @@ import org.junit.runner.Request;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runner.Runner;
+import org.junit.runner.notification.Failure;
 import org.junit.runners.model.InitializationError;
 
 /**
@@ -352,10 +357,40 @@ public class ScenarioRunnerSystemTest {
 
 	@Test
 	public void shouldSupportCustomScenarios() throws Throwable {
+		final List<Failure> emptyList = Collections.emptyList();
 		final Result result = JUnitCore.runClasses(WithCustomScenario.class);
 
 		assertEquals("run", 1, result.getRunCount());
-		assertEquals("ignored", 0, result.getIgnoreCount());
-		assertEquals("failure", 0, result.getFailureCount());
+		assertThat(result.getFailures(), is(equalTo(emptyList)));
+	}
+
+	@RunWith(ScenarioRunner.class)
+	public static class ConstructorInvalidForCustomScenario {
+		
+		@Scenarios
+		public static ScenarioList customScenarios() {
+			return ScenarioList.fromList(Arrays
+					.asList(new CustomScenario("foo")));
+		}
+		
+		public ConstructorInvalidForCustomScenario(final String param1,
+				final String param2) {
+			super();
+		}
+		
+		@Test
+		public void neverCalled() {}
+	}
+	
+	@Test
+	public void shouldFailIfTestConstructorArgumentsDoNotMatchScenario()
+			throws Throwable {
+		final Result result = JUnitCore
+				.runClasses(ConstructorInvalidForCustomScenario.class);
+		assertThat(result.getFailureCount(), is(1));
+		assertThat(result.getFailures().get(0).getMessage(),
+				containsString("Expected Constructor with single Scenario "
+						+ "argument when using custom Scenario "
+						+ "implementation."));
 	}
 }

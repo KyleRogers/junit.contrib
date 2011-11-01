@@ -20,9 +20,11 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
+ * A <code>ScenarioList</code> is an order read-only list of scenarios. The
+ * <code>ScenarioList</code> class provides various factory methods for
+ * convenient creation from custom scenarios or object arrays.
  * 
- *
- *
+ * 
  * @author Stefan Penndorf <stefan@cyphoria.net>
  */
 public class ScenarioList implements Iterable<Scenario> {
@@ -34,6 +36,27 @@ public class ScenarioList implements Iterable<Scenario> {
 		this.scenarios = new ArrayList<Scenario>(scenarios);
 	}
 
+	/**
+	 * <p>
+	 * Creates a new {@link ScenarioList} from the 3-dimensional array provided.
+	 * The first (outermost) dimension will split the different scenarios, the
+	 * second dimension will split scenario name and scenario parameters and the
+	 * third contains scenario name or scenario parameters. For example:
+	 * 
+	 * <pre>
+	 * ScenarioList.fromArray(new Object[][][] {
+	 *  { { &quot;add zero to zero is zero&quot; }, { 0, 0, 0 } },
+	 *  { { &quot;1+0=1&quot; }, { 1, 0, 1 } }, 
+	 *  { { &quot;1+2=3&quot; }, { 1, 2, 3 } }
+	 * });
+	 * </pre>
+	 * 
+	 * </p>
+	 * 
+	 * @param arrs
+	 *            array with scenario names and scenario paramters.
+	 * @return the <code>ScenarioList</code> created from <code>arrs</code>.
+	 */
 	public static ScenarioList fromArray(final Object[][][] arrs) {
 		final ArrayList<Scenario> scenarios = new ArrayList<Scenario>(
 				arrs.length);
@@ -49,6 +72,14 @@ public class ScenarioList implements Iterable<Scenario> {
 
 	public Iterator<Scenario> iterator() {
 		return scenarios.iterator();
+	}
+
+	/**
+	 * @param asList
+	 * @return
+	 */
+	public static ScenarioList fromList(List<Scenario> asList) {
+		return new ScenarioList(null);
 	}
 
 }

@@ -20,10 +20,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * <p>
+ * Annotation for a method which provides parameters to be injected into the
+ * test class constructor by <code>ScenarioRunner</code>. The methods annotated
+ * must
+ * <ul>
+ * <li>be public and static</li>
+ * <li>take no parameters</li>
+ * <li>return an instance of {@link ScenarioList}</li>
+ * </ul>
+ * </p>
  * 
- *
- *
+ * 
  * @author Stefan Penndorf <stefan@cyphoria.net>
+ * @see ScenarioRunner
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

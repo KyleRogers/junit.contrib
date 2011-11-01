@@ -15,14 +15,29 @@
 package org.junit.contrib.scenario;
 
 /**
+ * <p>
+ * A <code>Scenario</code> describes a parameterized run of a test
+ * specification. A <code>Scenario</code> might specify the parameters
+ * characteristically for that run as well as the expected result or outcome.
+ * <code>Scenario</code>s of the same type but parameterized differently will be
+ * used with the same set of test methods.
+ * </p>
+ * <p>
+ * See {@link ScenarioRunner} for additional information and examples.
+ * </p>
  * 
- *
- *
+ * 
  * @author Stefan Penndorf <stefan@cyphoria.net>
  */
 public interface Scenario {
 
+	/**
+	 * Returns the name of the scenario describing the purpose or set of input
+	 * parameters of the specific run. Each scenario should have a descriptive
+	 * and human readable name.
+	 * 
+	 * @return the human readable name of the scenario.
+	 */
 	public String getName();
-	
-	
+
 }

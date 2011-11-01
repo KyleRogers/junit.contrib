@@ -20,6 +20,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -259,5 +261,101 @@ public class ScenarioRunnerSystemTest {
 		assertEquals(1, result.getRunCount());
 		assertEquals(0, result.getIgnoreCount());
 		assertEquals(0, result.getFailureCount());
-	}	
+	}
+	
+	@RunWith(ScenarioRunner.class)
+	public static final class NoScenarioFactoryMethod {
+		
+		@Test
+		public void neverCalled() {		}
+	}
+	
+	@Test
+	public void shouldFailIfNoScenariosAnnotationGiven() throws Throwable {
+		expectedException.expectMessage("No public static @Scenarios method on class.");
+		
+		new ScenarioRunner(NoScenarioFactoryMethod.class);
+	}
+	
+	@RunWith(ScenarioRunner.class)
+	public static final class PrivateScenarioFactoryMethod {
+		
+		@SuppressWarnings("unused")
+		@Scenarios
+		private static ScenarioList scenarios() {
+			return null;
+		}
+		
+		@Test
+		public void neverCalled() {		}
+	}
+
+	@Test
+	public void shouldFailIfFactoryMethodIsPrivate() throws Throwable {
+		expectedException.expectMessage("No public static @Scenarios method on class.");
+		new ScenarioRunner(PrivateScenarioFactoryMethod.class);
+	}
+
+	@RunWith(ScenarioRunner.class)
+	public static final class NonStaticScenarioFactoryMethod {
+		
+		@Scenarios
+		public ScenarioList scenarios() {
+			return null;
+		}
+		
+		@Test
+		public void neverCalled() {		}
+	}
+
+	@Test
+	public void shouldFailIfFactoryMethodIsNotStatic() throws Throwable {
+		expectedException.expectMessage("No public static @Scenarios method on class.");
+		new ScenarioRunner(NonStaticScenarioFactoryMethod.class);
+	}
+
+	public static final class CustomScenario implements Scenario {
+		private final String name;
+
+		public CustomScenario(String name) {
+			super();
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+	}
+	
+	@RunWith(ScenarioRunner.class)
+	public static final class WithCustomScenario {
+		
+		@Scenarios
+		public static ScenarioList scenarios() {
+			return ScenarioList.fromList(Arrays.asList(new Scenario[] {
+					new CustomScenario("foo")
+			}));
+		}
+		
+		private final CustomScenario scenario;
+		
+		public WithCustomScenario(final CustomScenario scenario) {
+			this.scenario = scenario;
+		}
+		
+		@Test
+		public void nameSupplied() {
+			assertThat(scenario.getName(), is("foo"));
+		}
+	}
+
+	@Test
+	public void shouldSupportCustomScenarios() throws Throwable {
+		final Result result = JUnitCore.runClasses(WithCustomScenario.class);
+
+		assertEquals("run", 1, result.getRunCount());
+		assertEquals("ignored", 0, result.getIgnoreCount());
+		assertEquals("failure", 0, result.getFailureCount());
+	}
 }

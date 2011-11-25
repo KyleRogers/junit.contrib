@@ -33,6 +33,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.junit.rules.TestName;
 import org.junit.runner.Description;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Request;
@@ -58,12 +59,13 @@ public class ScenarioRunnerSystemTest {
 	}
 
 	@RunWith(ScenarioRunner.class)
-	public static final class HasMapTypeCalculatorScenario {
+	public static final class CalculatorScenarioSample {
 
 		@Scenarios
 		public static ScenarioList scenarios() {
 			return ScenarioList.fromArray(new Object[][][] {
-					{ { "0+0=0" }, { 0, 0, 0 } }, { { "1+0=1" }, { 1, 0, 1 } },
+					{ { "0+0=0" }, { 0, 0, 0 } }, 
+					{ { "1+0=1" }, { 1, 0, 1 } },
 					{ { "1+2=3" }, { 1, 2, 3 } }, });
 		}
 
@@ -71,7 +73,7 @@ public class ScenarioRunnerSystemTest {
 		private final Integer summand2;
 		private final Integer sum;
 
-		public HasMapTypeCalculatorScenario(Integer summand1, Integer summand2,
+		public CalculatorScenarioSample(Integer summand1, Integer summand2,
 				Integer sum) {
 			super();
 			this.summand1 = summand1;
@@ -96,21 +98,21 @@ public class ScenarioRunnerSystemTest {
 	@Test
 	public void shouldCountAllRunTests() throws Exception {
 		final Result result = JUnitCore
-				.runClasses(HasMapTypeCalculatorScenario.class);
+				.runClasses(CalculatorScenarioSample.class);
 		assertEquals(6, result.getRunCount());
 	}
 
 	@Test
 	public void shouldCountAllTestsBeforeRun() throws Exception {
 		final Runner runner = Request
-				.aClass(HasMapTypeCalculatorScenario.class).getRunner();
+				.aClass(CalculatorScenarioSample.class).getRunner();
 		assertEquals(6, runner.testCount());
 	}
 
 	@Test
 	public void shouldNamePlansCorrectly() throws Exception {
 		final Runner runner = Request
-				.aClass(HasMapTypeCalculatorScenario.class).getRunner();
+				.aClass(CalculatorScenarioSample.class).getRunner();
 		final Description description = runner.getDescription();
 
 		assertEquals("[0+0=0]", description.getChildren().get(0)
@@ -373,8 +375,7 @@ public class ScenarioRunnerSystemTest {
 					.asList(new CustomScenario("foo")));
 		}
 		
-		public ConstructorInvalidForCustomScenario(final String param1,
-				final String param2) {
+		public ConstructorInvalidForCustomScenario(final String param1) {
 			super();
 		}
 		
@@ -392,5 +393,39 @@ public class ScenarioRunnerSystemTest {
 				containsString("Expected Constructor with single Scenario "
 						+ "argument when using custom Scenario "
 						+ "implementation."));
+	}
+	
+	@RunWith(ScenarioRunner.class)
+	public static final class HasScenarioWithBadName {
+		
+		@Scenarios
+		public static ScenarioList scenarios() {
+			return ScenarioList.fromArray(new Object[][][] {
+					{ {"with()parantheses"}, {} }
+			});
+		}
+		
+		@Rule
+		public final TestName testName = new TestName(); 
+		
+		public HasScenarioWithBadName() {
+			super();
+		}
+		
+		@Test
+		public void shouldReportCorrectTestNameEvenWithParantheses() {
+			assertThat(
+					testName.getMethodName(),
+					is(equalTo("shouldReportCorrectTestNameEvenWithParantheses[with()parantheses]")));
+		}
+
+	}
+	
+	@Test
+	public void shouldSupportParanthesesInScenarioName()
+			throws Throwable {
+		List<Failure> noFailures = Collections.emptyList();
+		Result r = JUnitCore.runClasses(HasScenarioWithBadName.class);
+		assertThat(r.getFailures(), is(equalTo(noFailures)));
 	}
 }

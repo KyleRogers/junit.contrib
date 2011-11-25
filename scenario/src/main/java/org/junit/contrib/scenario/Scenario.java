@@ -19,8 +19,6 @@ package org.junit.contrib.scenario;
  * A <code>Scenario</code> describes a parameterized run of a test
  * specification. A <code>Scenario</code> might specify the parameters
  * characteristically for that run as well as the expected result or outcome.
- * <code>Scenario</code>s of the same type but parameterized differently will be
- * used with the same set of test methods.
  * </p>
  * <p>
  * See {@link ScenarioRunner} for additional information and examples.

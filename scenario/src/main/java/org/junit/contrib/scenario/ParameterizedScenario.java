@@ -17,10 +17,18 @@ package org.junit.contrib.scenario;
 import java.util.Arrays;
 
 /**
+ * <p>
+ * A <code>ParameterizedScenario</code> is a very special {@link Scenario}.
+ * 
+ * TODO Write better documentation!
+ * </p>
+ * <p>
+ * See {@link ScenarioRunner} for additional information and examples.
+ * </p>
  * 
  * @author Stefan Penndorf <stefan@cyphoria.net>
  */
-public class ParameterizedScenario implements Scenario {
+public final class ParameterizedScenario implements Scenario {
 
 	private final String name;
 	private final Object[] parameters;
